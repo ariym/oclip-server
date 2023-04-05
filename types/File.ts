@@ -1,0 +1,1 @@
+export default interface File {location: string, name: string, format: string}

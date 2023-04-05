@@ -10,91 +10,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//        types of data
-// 1. content:    clips, files, spaces
-// 2. navigator:  segments, markers
-// 3. data:       tags, metatags
+// File (Source)  -> file-path or URL
+// Segment        -> Video + timestamp begin/end
+// Video          -> timeline of segments
+// Tag            -> apply metadata to the segments and videos
+// TagType        -> type of tag (e.g. "author", "transcript_segment", "sentiment_segment", "language", "quality", "type", "description")
 
-// source (filesystem or web url)
 model File {
-  id        String   @id @default(cuid())
+  id Int @id @default(autoincrement())
+
+  name     String // filename
+  location String // todo: check for file:// OR http://
+  format   String // mp4, mov, avi, mkv, webm, etc.
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String // filename on disk
-  size      Int // in bytes
-  runTime   Decimal // deciseconds (10th of a second)
-  type      String //mp4, mp3, etc
-  location  String // location on disk or web
 
-  // original child clip (descendent clips descend from this child and not directly from the file)
-  clip Clip?
+  video Video?
 }
 
-// beginning and endpoint of a clip
 model Segment {
-  id String @id @default(cuid())
+  id Int @id @default(autoincrement())
 
-  tsBegin Int
-  tsEnd   Int
+  source   Video @relation(fields: [sourceId], references: [id])
+  sourceId Int
+  begin    Float
+  end      Float
+  tags      Tag[]
 
-  clip   Clip   @relation(fields: [clipId], references: [id])
-  clipId String
-
-  preferences String
-  tags        Tag[]
-}
-
-model Clip {
-  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
-  // if the clip has a file, the only timeline entry is made with the file (instead of a child clip)
+model Video {
+  id Int @id @default(autoincrement())
+
+  name     String
   timeline Segment[]
+  source   File? @relation(fields: [sourceId], references: [id])
+  sourceId Int @unique
+  tags     Tag[]
 
-  // only one clip is meant to represent a file, all subsequent clips are children of that clip (and have no reference to that file except via the parent clip)
-  file   File   @relation(fields: [fileId], references: [id])
-  fileId String @unique
-
-  spaces Space[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-// akin to a playlist or a folder
-model Space {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  name        String
-  description String
-  clips       Clip[]
-  tags        Tag[]
-
-  grid  String
-  query String
-}
-
-// keywords for sort/filter/search
 model Tag {
-  id        String   @id @default(cuid())
+  id Int @id @default(autoincrement())
+
+  type  TagType @relation(fields: [key], references: [key])
+  key   String
+  value String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String
-  Segment   Segment? @relation(fields: [segmentId], references: [id])
-  segmentId String?
-  Space     Space?   @relation(fields: [spaceId], references: [id])
-  spaceId   String?
+
+  segments Segment[]
+  videos Video[]
 }
 
-// attributes (length, )
-model Metadata {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+model TagType {
+  key String @id @unique
 
-model Marker {
-  id        String   @id @default(cuid())
+  name        String
+  description String // describe what this tag is for
+  format      String // todo: maybe regex for specififying hwo data should look?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  ts        Int
+
+  // array of all tags using this type?
+  instances Tag[]
 }
