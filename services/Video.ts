@@ -3,7 +3,10 @@ import FileType from '../types/File'
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-export const submitVideo = async (video: FileType) => {
+
+export const submitNewVideoFile = async (video: FileType) => {
+
+  // todo: see if this can be combined into one query (file.create + video.create + tags.create)
 
   // 1. save as new file
   const file: { id: number, name: string } = await prisma.file.create({ data: video });
