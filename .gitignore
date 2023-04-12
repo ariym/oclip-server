@@ -2,7 +2,6 @@ temp/
 .DS_Store
 *.db-journal
 *.db
-extensions/WhisperX
 
 # Logs
 logs
