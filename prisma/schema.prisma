@@ -19,9 +19,10 @@ datasource db {
 model File {
   id Int @id @default(autoincrement())
 
-  name     String // filename
-  location String // todo: check for file:// OR http://
-  format   String // mp4, mov, avi, mkv, webm, etc.
+  name   String // filename
+  host   String // either localhost / ip / domain
+  path   String
+  format String // mp4, mov, avi, mkv, webm, etc.
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,7 +37,7 @@ model Segment {
   sourceId Int
   begin    Float
   end      Float
-  tags      Tag[]
+  tags     Tag[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -47,8 +48,8 @@ model Video {
 
   name     String
   timeline Segment[]
-  source   File? @relation(fields: [sourceId], references: [id])
-  sourceId Int @unique
+  source   File?     @relation(fields: [sourceId], references: [id])
+  sourceId Int       @unique
   tags     Tag[]
 
   createdAt DateTime @default(now())
@@ -66,7 +67,7 @@ model Tag {
   updatedAt DateTime @updatedAt
 
   segments Segment[]
-  videos Video[]
+  videos   Video[]
 }
 
 model TagType {
