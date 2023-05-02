@@ -47,6 +47,7 @@ Extensions can fit into more than one category, these are what the extensions hu
 - [Chrome extension - reddit comments on youtube videos](https://github.com/odensc/karamel)
 - <https://github.com/google/mediapipe>
 - <https://github.com/ggerganov/llama.cpp>
+- [DeepSpeed Chat: Easy, Fast and Affordable RLHF Training of ChatGPT-like Models at All Scales](https://github.com/microsoft/DeepSpeed/tree/master/blogs/deepspeed-chat)
 - <https://github.com/coqui-ai/TTS>
 - <https://huggingface.co/bert-base-uncased>
 - <https://huggingface.co/Seethal/sentiment_analysis_generic_dataset?text=hey+hows+it+going>
