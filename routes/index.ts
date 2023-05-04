@@ -1,14 +1,12 @@
 import express, { Request, Response, Next } from 'express';
 const server = express();
 import { submitNewVideoFile } from '../services/Video';
+import FileBrowser from '../services/File';
 
-
-server.post('/submit', async (req: Request, res: Response, next: Next) => {
+server.post('/video/add-file', async (req: Request, res: Response, next: Next) => {
   try {
 
-    const { submission } = req.body; // url or path
-
-    const savedVideo = await submitNewVideoFile(submission);
+    const savedVideo = await submitNewVideoFile(req.body.submission);
 
     // todo: user-settings check for running processing apps and order to run in (if any)
     let isProcessing = false
@@ -24,5 +22,16 @@ server.post('/submit', async (req: Request, res: Response, next: Next) => {
   }
 });
 
+server.post("/fs/read", async (req: Request, res: Response, next: Next) => {
+  try {
+
+    const browser = new FileBrowser(req.body.path);
+    const dir = await browser.readDir();
+    res.json(dir);
+
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default server;

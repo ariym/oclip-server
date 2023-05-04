@@ -1,1 +1,6 @@
-export default interface File {location: string, name: string, format: string}
+export default interface File {
+  host: string,
+  path: string,
+  name: string,
+  format: string
+}
